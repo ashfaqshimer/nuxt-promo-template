@@ -46,6 +46,7 @@ module.exports = {
     /*
      ** Build configuration
      */
+    serverMiddleware: ["~/server/routes/index"],
     build: {
         /*
          ** You can extend webpack config here

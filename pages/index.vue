@@ -36,13 +36,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-// card item
-
-// card item end
-// hero
-
-// hero
-// Home page
 .links {
     padding-top: 15px;
 }
