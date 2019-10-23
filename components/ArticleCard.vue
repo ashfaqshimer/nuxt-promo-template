@@ -24,7 +24,7 @@
 export default {};
 </script>
 
-<style>
+<style lang='scss'>
 .card-image:hover {
     cursor: pointer;
     opacity: 0.9;

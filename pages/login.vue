@@ -14,41 +14,54 @@
                                 <div class="control">
                                     <input
                                         class="input is-large"
+                                        @blur="$v.form.email.$touch()"
                                         type="email"
                                         placeholder="Your Email"
                                         autofocus
                                         autocomplete="email"
+                                        v-model="form.email"
                                     />
-                                    <!-- <div class="form-error">
-                    <span class="help is-danger">Email is required</span>
-                    <span class="help is-danger">Email address is not valid</span>
-                                    </div>-->
+                                    <div v-if="$v.form.email.$error" class="form-error">
+                                        <span
+                                            v-if="!$v.form.email.required"
+                                            class="help is-danger"
+                                        >Email is required</span>
+                                        <span
+                                            v-if="!$v.form.email.emailValidator"
+                                            class="help is-danger"
+                                        >Email address is not valid</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="field">
                                 <div class="control">
                                     <input
                                         class="input is-large"
+                                        @blur="$v.form.password.$touch()"
                                         type="password"
                                         placeholder="Your Password"
                                         autocomplete="current-password"
+                                        v-model="form.password"
                                     />
-                                    <!-- <div class="form-error">
-                    <span class="help is-danger">Password is required</span>
-                                    </div>-->
+                                    <div v-if="$v.form.password.$error" class="form-error">
+                                        <span
+                                            v-if="!$v.form.password.required"
+                                            class="help is-danger"
+                                        >Password is required</span>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Login Button -->
                             <button
-                                @click.prevent="() => {}"
+                                @click.prevent="handleLogin"
+                                :disabled="$v.form.$invalid"
                                 class="button is-block is-info is-large is-fullwidth"
                             >Login</button>
                         </form>
                     </div>
                     <p class="has-text-grey">
                         <a>Sign In With Google</a> &nbsp;·&nbsp;
-                        <nuxt-link to="/register">Sign Up</nuxt-link>
-&nbsp;·&nbsp;
+                        <nuxt-link to="/register">Sign Up</nuxt-link>&nbsp;·&nbsp;
                         <a href="../">Need Help?</a>
                     </p>
                 </div>
@@ -57,7 +70,38 @@
     </section>
 </template>
 
-<style scoped>
+<script>
+import { required, email } from "vuelidate/lib/validators";
+export default {
+    data() {
+        return {
+            form: {
+                email: "",
+                password: ""
+            }
+        };
+    },
+    validations: {
+        form: {
+            email: {
+                emailValidator: email,
+                required
+            },
+            password: {
+                required
+            }
+        }
+    },
+    methods: {
+        handleLogin() {
+            this.$v.form.$touch();
+        }
+    }
+};
+</script>
+
+
+<style scoped lang='scss'>
 .hero.is-success {
     background: #f2f6fa;
 }
