@@ -37,14 +37,16 @@ export const actions = {
       throw new Error(error);
     }
   },
-  async handleRegister({ commit }, registrationDetails) {
-    try {
-      const url = '/api/v1/users/register';
-      const response = await this.$axios.$post(url, registrationDetails);
-      return true;
-    } catch (error) {
-      throw new Error(error);
-    }
+  handleRegister({ commit }, registrationDetails) {
+    return this.$axios
+      .$post('/api/v1/users/register', registrationDetails)
+      .catch((error) => {
+        let errorMsg = 'Something went wrong, try again';
+        if (error.response.data.errors) {
+          errorMsg = error.response.data.errors.message;
+        }
+        return Promise.reject(errorMsg);
+      });
   },
   async getAuthUser({ commit, getters, state }) {
     const authUser = getters.authUser;

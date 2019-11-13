@@ -13,42 +13,50 @@
               <div class="field">
                 <div class="control">
                   <input
-                    class="input is-large"
+                    v-model="form.username"
                     @blur="$v.form.username.$touch()"
+                    class="input is-large"
                     type="text"
                     placeholder="Username"
-                    v-model="form.username"
                   />
                   <div v-if="$v.form.username.$error" class="form-error">
                     <span
                       v-if="!$v.form.username.required"
                       class="help is-danger"
                     >Username is required</span>
+                    <span
+                      v-if="!$v.form.username.minLength"
+                      class="help is-danger"
+                    >Username minimum length is 6 characters</span>
                   </div>
                 </div>
               </div>
               <div class="field">
                 <div class="control">
                   <input
-                    class="input is-large"
+                    v-model="form.name"
                     @blur="$v.form.name.$touch()"
+                    class="input is-large"
                     type="text"
                     placeholder="Name"
-                    v-model="form.name"
                   />
                   <div v-if="$v.form.name.$error" class="form-error">
                     <span v-if="!$v.form.name.required" class="help is-danger">Name is required</span>
+                    <span
+                      v-if="!$v.form.name.minLength"
+                      class="help is-danger"
+                    >Name minimum length is 6 characters</span>
                   </div>
                 </div>
               </div>
               <div class="field">
                 <div class="control">
                   <input
-                    class="input is-large"
+                    v-model="form.email"
                     @blur="$v.form.email.$touch()"
+                    class="input is-large"
                     type="email"
                     placeholder="Your Email"
-                    v-model="form.email"
                   />
                   <div v-if="$v.form.email.$error" class="form-error">
                     <span v-if="!$v.form.email.required" class="help is-danger">Email is required</span>
@@ -62,12 +70,12 @@
               <div class="field">
                 <div class="control">
                   <input
-                    class="input is-large"
+                    v-model="form.avatar"
                     @blur="$v.form.avatar.$touch()"
+                    class="input is-large"
                     type="text"
                     placeholder="Avatar"
                     autocomplete
-                    v-model="form.avatar"
                   />
                   <div v-if="$v.form.avatar.$error" class="form-error">
                     <span v-if="!$v.form.avatar.url" class="help is-danger">Url format is not valid!</span>
@@ -81,12 +89,12 @@
               <div class="field">
                 <div class="control">
                   <input
-                    class="input is-large"
+                    v-model="form.password"
                     @blur="$v.form.password.$touch()"
+                    class="input is-large"
                     type="password"
                     placeholder="Your Password"
                     autocomplete="new-password"
-                    v-model="form.password"
                   />
                   <div v-if="$v.form.password.$error" class="form-error">
                     <span
@@ -96,36 +104,36 @@
                     <span
                       v-if="!$v.form.password.minLength"
                       class="help is-danger"
-                    >Password minimum length is 6 letters</span>
+                    >Password minimum length is 6 characters</span>
                   </div>
                 </div>
               </div>
               <div class="field">
                 <div class="control">
                   <input
+                    v-model="form.passwordConfirmation"
+                    @blur="$v.form.passwordConfirmation.$touch()"
                     class="input is-large"
-                    @blur="$v.form.password2.$touch()"
                     type="password"
                     placeholder="Password Confirmation"
                     autocomplete="off"
-                    v-model="form.password2"
                   />
-                  <div v-if="$v.form.password2.$error" class="form-error">
+                  <div v-if="$v.form.passwordConfirmation.$error" class="form-error">
                     <span
-                      v-if="!$v.form.password2.required"
+                      v-if="!$v.form.passwordConfirmation.required"
                       class="help is-danger"
-                    >Password is required</span>
+                    >Password Confirmation is required</span>
                     <span
-                      v-if="!$v.form.password2.sameAs"
+                      v-if="!$v.form.passwordConfirmation.sameAs"
                       class="help is-danger"
-                    >Password confirmation should be the same as password</span>
+                    >Password Confirmation should be the same as Password!</span>
                   </div>
                 </div>
               </div>
               <button
-                @click.prevent="handleSubmit"
+                @click.prevent="register"
                 :disabled="$v.form.$invalid"
-                type="submit"
+                type="button"
                 class="button is-block is-info is-large is-fullwidth"
               >Register</button>
             </form>
@@ -140,66 +148,74 @@
     </div>
   </section>
 </template>
-
 <script>
 import {
   required,
   email,
   minLength,
-  sameAs,
-  url
+  url,
+  sameAs
 } from "vuelidate/lib/validators";
 import { supportedFileType } from "@/helpers/validators";
-
 export default {
   data() {
     return {
       form: {
-        username: "",
-        name: "",
-        email: "",
+        username: null,
+        name: null,
+        email: null,
         avatar: null,
-        password: "",
-        password2: ""
+        password: null,
+        passwordConfirmation: null
       }
     };
   },
   validations: {
     form: {
-      username: { required },
-      name: { required },
+      username: {
+        required,
+        minLength: minLength(6)
+      },
+      name: {
+        required,
+        minLength: minLength(6)
+      },
+      avatar: {
+        url,
+        supportedFileType
+      },
       email: {
         required,
         emailValidator: email
       },
-      avatar: { url, supportedFileType },
-      password: { required, minLength: minLength(6) },
-      password2: { required, sameAs: sameAs("password") }
+      password: {
+        required,
+        minLength: minLength(6)
+      },
+      passwordConfirmation: {
+        required,
+        sameAs: sameAs("password")
+      }
     }
   },
   computed: {
     isFormValid() {
-      return !this.$v.$invalid;
+      return !this.$v.form.$invalid;
     }
   },
   methods: {
-    handleSubmit() {
+    register() {
       this.$v.form.$touch();
       if (this.isFormValid) {
         this.$store
           .dispatch("auth/handleRegister", this.form)
-          .then(() => this.$router.push("/login"))
-          .catch(() =>
-            this.$toasted.error("Unable to register", {
-              duration: 3000
-            })
-          );
+          .then(_ => this.$router.push("/login"))
+          .catch(error => this.$toasted.error(error, { duration: 3000 }));
       }
     }
   }
 };
 </script>
-
 <style scoped>
 .hero.is-success {
   background: #f2f6fa;
