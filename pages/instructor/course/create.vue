@@ -1,7 +1,7 @@
 <template>
   <div class="full-page-takeover-window">
     <div class="full-page-takeover-page">
-      <Header :title="`Step 1 of 2`" exitLink="/instructor/courses" />
+      <Header :title="`Step ${activeStep} of ${stepsLength}`" exitLink="/instructor/courses" />
       <div class="full-page-takeover-header-bottom-progress">
         <div :style="{width: progress}" class="full-page-takeover-header-bottom-progress-highlight"></div>
       </div>
@@ -29,7 +29,7 @@
                 >Continue</button>
                 <button
                   v-else
-                  @click="() => {}"
+                  @click="handleSubmit"
                   :disabled="!canProceed"
                   class="button is-success is-large float-right"
                 >Confirm</button>
@@ -77,6 +77,11 @@ export default {
     mergeFormData({ data, isValid }) {
       this.form = { ...this.form, ...data };
       this.canProceed = isValid;
+    },
+    handleSubmit() {
+      this.$store
+        .dispatch("instructor/course/createCourse", this.form)
+        .then(() => this.$router.push("/instructor/courses"));
     }
   },
   computed: {

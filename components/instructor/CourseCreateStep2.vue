@@ -8,7 +8,11 @@
       <div class="course-create-form-group">
         <div class="course-create-form-field">
           <div class="select is-large">
-            <select v-model="form.category" @change="emitFormData">
+            <select
+              v-model="form.category"
+              @blur="$v.form.category.$touch()"
+              @change="emitFormData"
+            >
               <option value="default">Select Category</option>
               <option
                 v-for="category in categories"
@@ -16,6 +20,9 @@
                 :value="category._id"
               >{{category.name}}</option>
             </select>
+          </div>
+          <div v-if="$v.form.category.$dirty && !isValid" class="form-error">
+            <span class="help is-danger">Category is required</span>
           </div>
         </div>
       </div>
@@ -48,11 +55,15 @@ export default {
   },
   methods: {
     emitFormData() {
+      this.$v.form.$touch();
       this.$emit("stepUpdated", { data: this.form, isValid: this.isValid });
     }
   }
 };
 </script>
 
-<style>
+<style scoped>
+.help.is-danger {
+  text-align: left;
+}
 </style>

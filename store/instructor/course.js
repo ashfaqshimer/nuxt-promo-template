@@ -12,6 +12,15 @@ export const actions = {
     } catch (error) {
       throw new Error(error);
     }
+  },
+  async createCourse({ commit }, courseData) {
+    try {
+      const url = '/api/v1/products';
+      const response = await this.$axios.$post(url, courseData);
+      return true;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 };
 
