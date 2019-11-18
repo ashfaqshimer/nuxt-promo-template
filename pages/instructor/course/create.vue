@@ -15,7 +15,7 @@
           <div class="container">
             <div class="full-page-footer-col">
               <div v-if="!isFirstStep">
-                <a @click.prevent="previousStep" class="button is-large">Previous</a>
+                <a @click.prevent="_previousStep" class="button is-large">Previous</a>
               </div>
               <div v-else class="empty-container"></div>
             </div>
@@ -23,7 +23,7 @@
               <div>
                 <button
                   v-if="!isLastStep"
-                  @click.prevent="nextStep"
+                  @click.prevent="_nextStep"
                   :disabled="!canProceed"
                   class="button is-large float-right"
                 >Continue</button>
@@ -46,9 +46,12 @@
 import Header from "~/components/shared/Header";
 import CourseCreateStep1 from "~/components/instructor/CourseCreateStep1";
 import CourseCreateStep2 from "~/components/instructor/CourseCreateStep2";
+import MultiComponentMixin from "~/mixins/MultiComponentMixin";
+
 export default {
   layout: "instructor",
   components: { Header, CourseCreateStep1, CourseCreateStep2 },
+  mixins: [MultiComponentMixin],
   data() {
     return {
       activeStep: 1,
@@ -64,14 +67,14 @@ export default {
     return store.dispatch("category/fetchCategories");
   },
   methods: {
-    nextStep() {
-      this.activeStep++;
+    _nextStep() {
+      this.nextStep();
       this.$nextTick(
         () => (this.canProceed = this.$refs.activeComponent.isValid)
       );
     },
-    previousStep() {
-      this.activeStep--;
+    _previousStep() {
+      this.previousStep();
       this.canProceed = true;
     },
     mergeFormData({ data, isValid }) {
