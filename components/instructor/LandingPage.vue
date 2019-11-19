@@ -1,5 +1,4 @@
 <template>
-  <!-- LandingPage -->
   <div class="card manage-card">
     <header class="card-header card-section">
       <p class="card-header-title">Course Landing Page</p>
@@ -10,6 +9,8 @@
           <label class="label">Course title</label>
           <div class="control">
             <input
+              :value="course.title"
+              @input="($event) => emitCourseValue($event, 'title')"
               class="input is-medium"
               type="text"
               placeholder="Dart and Flutter From Zero to Hero "
@@ -20,6 +21,8 @@
           <label class="label">Course subtitle</label>
           <div class="control">
             <input
+              :value="course.subtitle"
+              @input="($event) => emitCourseValue($event, 'subtitle')"
               class="input is-medium"
               type="text"
               placeholder="Build real mobile Application for Android and iOS."
@@ -30,18 +33,28 @@
           <label class="label">Course description</label>
           <div class="control">
             <textarea
+              :value="course.description"
+              @input="($event) => emitCourseValue($event, 'description')"
               class="textarea is-medium"
               type="text"
               placeholder="Write something catchy about the course"
             ></textarea>
           </div>
         </div>
+        <!-- category for later -->
         <div class="field">
           <label class="label">Category</label>
           <div class="select is-medium">
-            <select>
+            <select
+              :value="course.category._id"
+              @change="($event)=> emitCourseValue($event, 'category')"
+            >
               <option value="default">Select Category</option>
-              <!-- <option> </option> -->
+              <option
+                v-for="category in categories"
+                :key="category._id"
+                :value="category._id"
+              >{{category.name}}</option>
             </select>
           </div>
         </div>
@@ -50,12 +63,14 @@
           <div class="columns">
             <div class="column">
               <figure class="image is-4by2">
-                <img :src="''" />
+                <img :src="course.image" />
               </figure>
             </div>
             <div class="column centered">
               <div class="control">
                 <input
+                  :value="course.image"
+                  @input="($event) => emitCourseValue($event, 'image')"
                   class="input is-medium"
                   type="text"
                   placeholder="https://images.unsplash.com/photo-1498837167922-ddd27525d352"
@@ -68,6 +83,8 @@
           <label class="label">Course Link</label>
           <div class="control">
             <input
+              :value="course.productLink"
+              @input="($event) => emitCourseValue($event, 'productLink')"
               class="input is-medium"
               type="text"
               placeholder="https://www.udemy.com/vue-js-2-the-full-guide-by-real-apps-vuex-router-node"
@@ -78,6 +95,8 @@
           <label class="label">Course Video Link</label>
           <div class="control">
             <input
+              :value="course.promoVideoLink"
+              @input="($event) => emitCourseValue($event, 'promoVideoLink')"
               class="input is-medium"
               type="text"
               placeholder="https://www.youtube.com/watch?v=WQ9sCAhRh1M"
@@ -87,12 +106,37 @@
       </form>
     </div>
   </div>
-  <!-- LandingPage End -->
 </template>
-
 <script>
-export default {};
+export default {
+  props: {
+    course: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    categories() {
+      return this.$store.state.category.items;
+    }
+  },
+  methods: {
+    emitCourseValue(e, field) {
+      const value = e.target.value;
+
+      if (field === "category") {
+        return this.emitCategory(value);
+      }
+      return this.$emit("courseValueUpdated", { value, field });
+    },
+    emitCategory(categoryId) {
+      const foundCategory = this.categories.find(cat => cat._id === categoryId);
+      this.$emit("courseValueUpdated", {
+        value: foundCategory,
+        field: "category"
+      });
+    }
+  }
+};
 </script>
 
-<style>
-</style>

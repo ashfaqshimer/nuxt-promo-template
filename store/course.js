@@ -10,7 +10,7 @@ export const actions = {
       commit('setItems', { resource: 'course', items: courses }, { root: true });
       return state.items;
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 };

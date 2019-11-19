@@ -6,24 +6,19 @@
     </header>
     <div class="card-content card-section">
       <form>
-        <div class="field">
-          <div class="control">
-            <input
-              class="input is-large"
-              type="text"
-              placeholder="What will students learn in your course ?"
-            />
-          </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <input
-              class="input is-large"
-              type="text"
-              placeholder="What are the requirements for the course ?"
-            />
-          </div>
-        </div>
+        <multi-line-text-input
+          @addClicked="addLine('wsl')"
+          @removeClicked="removeLine($event, 'wsl')"
+          @valueUpdated="updateLine($event, 'wsl')"
+          labelText="What will students learn?"
+          :lines="course.wsl"
+        />
+        <multi-line-text-input
+          @addClicked="addLine('requirements')"
+          @removeClicked="removeLine($event, 'requirements')"
+          labelText="What are the requirements?"
+          :lines="course.requirements"
+        />
       </form>
     </div>
   </div>
@@ -31,7 +26,33 @@
 </template>
 
 <script>
-export default {};
+import MultiLineTextInput from "~/components/form/MultiLineTextInput";
+export default {
+  components: {
+    MultiLineTextInput
+  },
+  props: {
+    course: {
+      type: Object,
+      required: true
+    }
+  },
+  methods: {
+    addLine(field) {
+      this.$store.commit("instructor/course/addLine", field);
+    },
+    removeLine(index, field) {
+      this.$store.commit("instructor/course/removeLine", { field, index });
+    },
+    updateLine({ value, index }, field) {
+      this.$store.dispatch("instructor/course/updateLine", {
+        field,
+        index,
+        value
+      });
+    }
+  }
+};
 </script>
 
 <style>

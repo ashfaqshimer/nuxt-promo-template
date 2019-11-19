@@ -3,7 +3,10 @@
     <Header title="Some very nice course name" exitLink="/instructor/courses">
       <template #actionMenu>
         <div class="full-page-takeover-header-button">
-          <button @click="() => {}" class="button is-primary is-inverted is-medium is-outlined">Save</button>
+          <button
+            @click="handleSave"
+            class="button is-primary is-inverted is-medium is-outlined"
+          >Save</button>
         </div>
       </template>
     </Header>
@@ -45,12 +48,12 @@
           </div>
           <div class="column">
             <keep-alive>
-              <component :is="activeComponent" />
+              <component
+                @courseValueUpdated="handleCourseUpdate"
+                :is="activeComponent"
+                :course="course"
+              />
             </keep-alive>
-            <target-students v-if="currentPage==='target'" />
-            <landing-page v-if="currentPage==='landing'" />
-            <price v-if="currentPage==='price'" />
-            <status v-if="currentPage==='status'" />
           </div>
         </div>
       </div>
@@ -70,6 +73,10 @@ export default {
   layout: "instructor",
   components: { Header, LandingPage, TargetStudents, Price, Status },
   mixins: [MultiComponentMixin],
+  async fetch({ store, params }) {
+    await store.dispatch("instructor/course/fetchCourseById", params.id);
+    await store.dispatch("category/fetchCategories");
+  },
   data() {
     return {
       steps: ["TargetStudents", "LandingPage", "Price", "Status"],
@@ -79,6 +86,9 @@ export default {
   computed: {
     activeComponent() {
       return this.steps[this.activeStep - 1];
+    },
+    course() {
+      return this.$store.state.instructor.course.item;
     }
   },
   methods: {
@@ -87,6 +97,22 @@ export default {
     },
     activeComponentClass(step) {
       return this.activeStep === step ? "is-active" : "";
+    },
+    handleCourseUpdate({ value, field }) {
+      this.$store.dispatch("instructor/course/updateCourseValue", {
+        field,
+        value
+      });
+    },
+    handleSave() {
+      this.$store
+        .dispatch("instructor/course/updateCourse", this.course._id)
+        .then(() =>
+          this.$toasted.success("Successfully updated!", { duration: 3000 })
+        )
+        .catch(() =>
+          this.$toasted.error("Something went wrong", { duration: 3000 })
+        );
     }
   }
 };
